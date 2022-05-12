@@ -33,11 +33,33 @@
 <script src="{{asset('system/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js')}}"></script>
 <!-- sweetalert -->
 <script src="{{asset('system/plugins/sweetalert2/sweetalert2.all.min.js')}}"></script>
+<!-- toastr -->
+<script src="{{asset('system/plugins/toastr/toastr.min.js')}}"></script>
+<!-- DataTables  & Plugins -->
+<script src="{{asset('system/plugins/DataTables/datatables.min.js')}}"></script>
 <!-- AdminLTE App -->
 <script src="{{asset('system/dist/js/adminlte.js')}}"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="{{asset('system/dist/js/main.js')}}"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="{{asset('system/dist/js/pages/dashboard.js')}}"></script>
+@stack('js')
+<script>
+    var url = window.location;
+    var server = window.location.origin;
+
+    // for sidebar menu entirely but not cover treeview
+    $('ul.nav-sidebar a').filter(function() {
+        if (this.href) {
+            return this.href == url || url.href.indexOf(this.href) == 0;
+        }
+    }).addClass('active');
+    //Dashboard
+    window.location.href == `${server}/admin` || window.location.href == `${server}/admin/` ? $('.dashboard').removeClass('bg-secondary').addClass('active') : $('.dashboard').removeClass('active').addClass('bg-secondary');
+
+    // for the treeview
+    $('ul.nav-treeview a').filter(function() {
+        if (this.href) {
+            return this.href == url || url.href.indexOf(this.href) == 0;
+        }
+    }).parentsUntil(".nav-sidebar > .nav-treeview").addClass('menu-open').prev('a').addClass('active');
+</script>
 </body>
+
 </html>

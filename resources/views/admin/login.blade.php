@@ -1,5 +1,6 @@
+
 @push('title')
-Admin > Login
+    Admin > Login
 @endpush
 @extends('admin.layouts.blank')
 
@@ -16,6 +17,12 @@ Admin > Login
                 <p class="login-box-msg">Sign in to start your session</p>
                 <form action="" method="post">
                     @csrf
+                    @if(session('login_error'))
+                    <p class="bg-danger text-center p-2 rounded"> {{session()->get('login_error')}}</p>
+                    @endif
+                    @if(session('password_update'))
+                    <p class="bg-warning text-white text-center p-2 rounded"> {{session('password_update')}}</p>
+                    @endif
                     <div class="input-group mb-3">
                         <input type="email" class="form-control" placeholder="Email" name="email" required>
                         <div class="input-group-append">

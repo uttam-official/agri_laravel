@@ -28,6 +28,10 @@
   <!-- summernote -->
   <link rel="stylesheet" href="{{asset('system/plugins/summernote/summernote-bs4.min.css')}}">
   <link rel="shortcut icon" href="{{asset('system/dist/img/favicon.png')}}" type="image/x-icon">
+  <!-- toastr -->
+  <link rel="stylesheet" href="{{asset('system/plugins/toastr/toastr.min.css')}}">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{asset('system/plugins/DataTables/datatables.min.css')}}">
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
