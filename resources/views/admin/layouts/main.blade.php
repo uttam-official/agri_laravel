@@ -1,0 +1,7 @@
+@include('admin.includes.header')
+@include('admin.includes.preloader')
+@include('admin.includes.navbar')
+@include('admin.includes.sidebar')
+@yield('main-section')
+@include('admin.includes.copyright')
+@include('admin.includes.footer')
