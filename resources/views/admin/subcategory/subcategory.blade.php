@@ -1,16 +1,16 @@
 @push('title')
-Category Management
+Subcategory Management
 @endpush
 @push('js')
-    <script src="{{url('system/dist/js/admin/category.js')}}"></script>
-    @if(session()->has('category_success'))
+    <script src="{{url('system/dist/js/admin/subcategory.js')}}"></script>
+    @if(session()->has('subcategory_success'))
     <script>
-        toastr.success("{{session()->get('category_success')}}");
+        toastr.success("{{session()->get('subcategory_success')}}");
     </script>
     @endif
-    @if(session()->has('category_error'))
+    @if(session()->has('subcategory_error'))
     <script>
-        toastr.error("{{session()->get('category_error')}}");
+        toastr.error("{{session()->get('subcategory_error')}}");
     </script>
     @endif
 @endpush
@@ -24,12 +24,12 @@ Category Management
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1 class="m-0">Category</h1>
+                    <h1 class="m-0">Subcategory</h1>
                 </div><!-- /.col -->
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{url('/admin')}}">Dashboard</a></li>
-                        <li class="breadcrumb-item">Category</li>
+                        <li class="breadcrumb-item">Subcategory</li>
                     </ol>
                 </div><!-- /.col -->
             </div><!-- /.row -->
@@ -43,20 +43,20 @@ Category Management
             <!-- general form elements -->
             <div class="card card-outline card-info">
                 <div class="text-right mt-3">
-                    <a href="{{url('/admin/category/add/')}}" class="btn btn-sm btn-success mr-3"><i class="fa fa-plus-circle"></i> Add
+                    <a href="{{url('/admin/subcategory/add/')}}" class="btn btn-sm btn-success mr-3"><i class="fa fa-plus-circle"></i> Add
                         New</a>
                 </div>
                 <div class="card-body">
 
                     <div class="rounded-top pt-3" style="border-top: solid 3px #17a2b8;">
-                        <table id="category_table" class="table table-hover table-striped col-md-11 nowrap dataTable">
+                        <table id="subcategory_table" class="table table-hover table-striped col-md-11 nowrap dataTable">
                             <thead>
                                 <tr class="text-center">
                                     <th>#</th>
-                                    <th class="text-left">Category Name</th>
+                                    <th class="text-left ml-3">Subcategory Name</th>
                                     <th>Order</th>
+                                    <th class="text-left ml-3">Parent Category</th>
                                     <th>Status</th>
-                                    <th>Number of Sub-category</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -65,13 +65,13 @@ Category Management
                                     @foreach($page_data as $k=>$l)
                                         <tr class="text-center">
                                             <td>{{$k+1}}</td>
-                                            <td class="text-left">{{$l->name}}</td>
+                                            <td class="text-left ml-3">{{$l->name}}</td>
                                             <td>{{$l->categoryorder}}</td>
+                                            <td class="text-left ml-3">{{$l->parent_name}}</td>
                                             <td>{!!$l->isactive==1?'<span class="badge badge-info">Active</span>':'<span class="badge badge-secondary">Inactive</span>'!!}</td>
-                                            <td>{{$l->no_sub}}</td>
                                             <td>
-                                                <a href="{{url('admin/category/add').'/'.$l->id}}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
-                                                <a href="{{url('admin/category/delete').'/'.$l->id}}" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
+                                                <a href="{{url('admin/subcategory/add').'/'.$l->id}}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
+                                                <a href="{{url('admin/subcategory/delete').'/'.$l->id}}" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
                                             </td>
                                         </tr>
                                     @endforeach

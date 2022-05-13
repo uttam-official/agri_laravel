@@ -1,13 +1,11 @@
 @push('title')
-{{$title??'Add Category'}}
+    {{$title}}
 @endpush
 @push('js')
-<script src="{{url('system/dist/js/admin/add_category.js')}}"></script>
-   
+
 @endpush
 @extends('admin.layouts.main')
 @section('main-section')
-
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -20,7 +18,7 @@
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
                         <li class="breadcrumb-item"><a href="{{url('admin')}}">Dashboard</a></li>
-                        <li class="breadcrumb-item"><a href="{{url('admin/category')}}">Category</a></li>
+                        <li class="breadcrumb-item"><a href="{{url('admin/subcategory')}}">Subcategory</a></li>
                         <li class="breadcrumb-item active"> {{$title}}</li>
                     </ol>
                 </div><!-- /.col -->
@@ -35,22 +33,39 @@
             <!-- general form elements -->
             <div class="card card-outline card-info">
                 <div class="card-header">
-                    <h3 class="card-title">{{$title}} </h3>
+                    <h3 class="card-title"> {{$title}}</h3>
                 </div>
                 <!-- /.card-header -->
                 <!-- form start -->
-                <form action="{{url('/admin/category/add')}}" method="POST" enctype="multipart/form-data">
+                <form action="{{url('admin/subcategory/add')}}" method="POST">
                     @csrf
-                    <input type="hidden" name="id" value="{{$id}}">
+                    <input type="hidden" name="id" value="{{$id??0}}">
                     <div class="card-body">
+                        <div class="row form-group">
+                            <div class="col-md-2">
+                                <label>Category <span class="text-danger">*</span></label>
+                            </div>
+                            <div class="col-md-10">
+                                <select name="parent" class="form-control text-uppercase @error('parent') is-invalid @enderror" >
+                                    <option value="" disabled selected>---Select a category---</option>
+                                    @php $_selected_cat=$data->parent ?? old('parent') ?? '' @endphp
+                                    @foreach ($category_list as $l)
+                                        <option value="{{ $l->id }}" {{$_selected_cat==$l->id?'selected':''}} >{{$l->name}}</option>
+                                    @endforeach
+                                </select>
+                                @error('name')
+                                        <span class="invalid-feedback">{{$message}}</span>
+                                @enderror
+                            </div>
+                        </div>
                         <div class="row form-group">
                             <div class="col-md-2">
                                 <label>Name <span class="text-danger">*</span></label>
                             </div>
                             <div class="col-md-10">
-                                <input type="text" class="form-control @error('name') is-invalid @enderror" placeholder="Enter category name" name="name" value="{{$name??old('name')??''}}" >
+                                <input type="text" class="form-control @error('name') is-invalid @enderror" placeholder="Enter Subcategory name" name="name" value="{{$data->name??old('name')??''}}" >
                                 @error('name')
-                                <span class="invalid-feedback">{{$message}}</span>
+                                        <span class="invalid-feedback">{{$message}}</span>
                                 @enderror
                             </div>
                         </div>
@@ -59,32 +74,10 @@
                                 <label>Order <span class="text-danger">*</span></label>
                             </div>
                             <div class="col-md-10">
-                                <input class="form-control @error('categoryorder') is-invalid @enderror" placeholder="Enter category Order" name="categoryorder" value="{{$categoryorder??old('categoryorder')??''}}" >
+                                <input type="text" class="form-control @error('categoryorder') is-invalid @enderror" placeholder="Enter Subcategory Order" name="categoryorder" value="{{$data->categoryorder??old('categoryorder')??''}}" >
                                 @error('categoryorder')
-                                <span class="invalid-feedback">{{$message}}</span>
+                                        <span class="invalid-feedback">{{$message}}</span>
                                 @enderror
-                            </div>
-                        </div>
-                        @isset ( $extension)
-                        <div class="row mb-3">
-                            <div class="col-md-3"></div>
-                            <div class="col-md-2">
-                                <img style="background-color:rgb(180 217 129)" class="image image-responsive d-block mx-auto" src="{{asset('upload/category/').'/'.$id.'.'.$extension}}" />
-                            </div>
-                        </div>                        
-                        @endisset
-                        <div class="row form-group">
-                            <div class="col-md-2">
-                                <label>Image @if($id==0)<span class="text-danger">*</span>@endif</label>
-                            </div>
-                            <div class="col-md-10">
-                                <div class="custom-file">
-                                    <input type="file" class="custom-file-input @error('categoryorder') is-invalid @enderror" name="image" accept="image/jpeg,image/png">
-                                    <label class="custom-file-label">Choose file</label>
-                                    @error('image')
-                                    <span class="invalid-feedback">{{$message}}</span>
-                                    @enderror
-                                </div>
                             </div>
                         </div>
                         <div class="row form-group">
@@ -92,14 +85,18 @@
                                 <label>Status <span class="text-danger">*</span></label>
                             </div>
                             <div class="col-md-10">
-                                <select name="isactive" class="form-control" >
-                                    <option value="1">Active</option>
-                                    <option value="0" {{$isactive==0?'selected':''}}>Deactive</option>
+                                @php $_selected=$data->isactive ?? old('isactive') ?? '' @endphp
+                                <select name="isactive" class="form-control text-uppercase @error('isactive') is-invalid @enderror" >
+                                    <option value="1" >Active</option>
+                                    <option value="0" {{$_selected==0?'selected':''}}>Deactive</option>
                                 </select>
+                                @error('isactive')
+                                        <span class="invalid-feedback">{{$message}}</span>
+                                @enderror
                             </div>
                         </div>
                         <div class=" text-center">
-                            <button type="submit" class="btn btn-sm btn-success">{{$btn_text ?? 'Add'}}</button>&nbsp;&nbsp;<button type="reset" class="btn btn-sm btn-warning text-white">Reset</button>
+                            <button type="submit" class="btn btn-sm btn-success"><?= $btn_text ?></button>&nbsp;&nbsp;<button type="reset" class="btn btn-sm btn-warning text-white">Reset</button>
                         </div>
                     </div>
                     <!-- /.card-body -->

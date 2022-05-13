@@ -1,5 +1,5 @@
 $(function () {
     $(document).ready(function () {
-        $('#category_table').DataTable();
+        $('#subcategory_table').DataTable();
     });
 });

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\client\ClientController;
 use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\admin\SubcategoryController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -34,13 +35,17 @@ Route::middleware(['isadminneedlogged'])->group(function(){
 // IS ADMIN ALREADY LOGGED
 Route::middleware(['isadminlogged'])->group(function(){
     Route::get('/admin',[AdminController::class,'index']);
+    Route::get('/admin/logout',[AdminController::class,'logout']);
     Route::get('/admin/settings',[AdminController::class,'settings']);
     Route::post('/admin/settings',[AdminController::class,'updateSettings']);
     Route::get('/admin/category',[CategoryController::class,'index']);
     Route::get('/admin/category/add/{id?}',[CategoryController::class,'add']);
-    Route::post('/admin/category/add',[CategoryController::class,'save']);    
+    Route::get('/admin/category/delete/{id}',[CategoryController::class,'delete']);
+    Route::post('/admin/category/add',[CategoryController::class,'save']); 
+    Route::get('admin/subcategory',[SubcategoryController::class,'index']);  
+    Route::get('admin/subcategory/add/{id?}',[SubcategoryController::class,'add']); 
+    Route::post('/admin/subcategory/add',[SubcategoryController::class,'save']); 
 });
-Route::get('/admin/logout',[AdminController::class,'logout']);
 
 
 
