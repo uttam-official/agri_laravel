@@ -68,9 +68,9 @@ Subcategory Management
                                             <td class="text-left ml-3">{{$l->name}}</td>
                                             <td>{{$l->categoryorder}}</td>
                                             <td class="text-left ml-3">{{$l->parent_name}}</td>
-                                            <td>{!!$l->isactive==1?'<span class="badge badge-info">Active</span>':'<span class="badge badge-secondary">Inactive</span>'!!}</td>
+                                            <td>{!!$l->isactive==1?'<span class="badge badge-primary">Active</span>':'<span class="badge badge-secondary">Inactive</span>'!!}</td>
                                             <td>
-                                                <a href="{{url('admin/subcategory/add').'/'.$l->id}}" class="btn btn-sm btn-outline-primary"><i class="fa fa-edit"></i></a>
+                                                <a href="{{url('admin/subcategory/add').'/'.$l->id}}" class="btn btn-sm btn-outline-info"><i class="fa fa-edit"></i></a>
                                                 <a href="{{url('admin/subcategory/delete').'/'.$l->id}}" class="btn btn-sm btn-outline-danger"><i class="fa fa-trash"></i></a>
                                             </td>
                                         </tr>

@@ -3,7 +3,11 @@
 @endpush
 @push('js')
 <script src="{{url('system/dist/js/admin/add_category.js')}}"></script>
-   
+@if($errors->all()))
+<script>
+    toastr.error("Please Enter Valid Input");
+</script>
+@endif
 @endpush
 @extends('admin.layouts.main')
 @section('main-section')

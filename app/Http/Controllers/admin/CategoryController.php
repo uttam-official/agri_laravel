@@ -103,7 +103,7 @@ class CategoryController extends Controller
     }
     protected function delete($id)
     {
-        $category = Category::find($id);
+        $category = Category::where('parent','=',0)->where('isactive','>',-1)->find($id);
         if ($category == null) {
             return redirect('admin/category')->with('category_error', 'Bad Request !');
         }

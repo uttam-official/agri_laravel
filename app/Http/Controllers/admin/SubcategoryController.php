@@ -88,8 +88,16 @@ class SubcategoryController extends Controller
     }
     protected function delete($id)
     {
+        $subcategory = $subcategory=Category::where('parent','>',0)->where('isactive','>',-1)->find($id);
+        if ($subcategory == null) {
+            return redirect('admin/subcategory')->with('subcategory_error', 'Bad Request !');
+        }
+        $subcategory->isactive = -1;
+        if ($subcategory->save()) {
+            return redirect('admin/subcategory')->with('subcategory_error', 'Subcategory Deleted Successfully');
+        }
     }
-    protected function get_category()
+    public function get_category()
     {
         $category = Category::where('isactive', '=', '1')
             ->where('parent', '=', 0)

@@ -5,6 +5,8 @@ use App\Http\Controllers\client\ClientController;
 use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\SubcategoryController;
+use App\Http\Controllers\admin\DiscountController;
+use App\Http\Controllers\admin\ProductController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -44,7 +46,17 @@ Route::middleware(['isadminlogged'])->group(function(){
     Route::post('/admin/category/add',[CategoryController::class,'save']); 
     Route::get('admin/subcategory',[SubcategoryController::class,'index']);  
     Route::get('admin/subcategory/add/{id?}',[SubcategoryController::class,'add']); 
+    Route::get('admin/subcategory/delete/{id}',[SubcategoryController::class,'delete']); 
     Route::post('/admin/subcategory/add',[SubcategoryController::class,'save']); 
+    Route::get('admin/discount',[DiscountController::class,'index']);
+    Route::get('admin/discount/add/{id?}',[DiscountController::class,'add']);
+    Route::post('admin/discount/add',[DiscountController::class,'save']);
+    Route::get('/admin/discount/delete/{id}',[DiscountController::class,'delete']);
+    Route::get('admin/product',[ProductController::class,'index']);
+    Route::get('admin/product/add/{id?}',[ProductController::class,'add']);
+    Route::post('admin/product/add',[ProductController::class,'save']);
+    Route::get('/admin/product/delete/{id}',[ProductController::class,'delete']);
+    Route::post('/admin/subcategory/get',[ProductController::class,'get_subcategory']);
 });
 
 

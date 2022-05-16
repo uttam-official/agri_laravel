@@ -60,6 +60,13 @@
         }
     }).parentsUntil(".nav-sidebar > .nav-treeview").addClass('menu-open').prev('a').addClass('active');
 </script>
+<script>
+    $(document).ready(function() {
+        $("body").tooltip({
+            selector: '[data-toggle=tooltip]'
+        });
+    });
+</script>
 </body>
 
 </html>
