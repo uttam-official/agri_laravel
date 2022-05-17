@@ -66,5 +66,11 @@ Route::middleware(['isadminlogged'])->group(function(){
 */
 
 Route::get('/',[ClientController::class,'index']);
+Route::post('/add_to_cart',[ClientController::class,'add_to_cart']);
+Route::post('/remove_cart',[ClientController::class,'remove_cart']);
+Route::post('/coupon',[ClientController::class,'validate_coupon']);
+Route::get('/cart',[ClientController::class,'cart']);
+Route::get('/session',[ClientController::class,'get_session']);
 Route::get('/cat/{uri}/{uri2?}',[ClientController::class,'category']);
 Route::get('/{uri}',[ClientController::class,'product']);
+

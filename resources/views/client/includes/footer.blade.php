@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 use App\Http\Controllers\client\FunctionController;
 ?>
 <footer class="footer">
@@ -8,9 +9,9 @@ use App\Http\Controllers\client\FunctionController;
         <aside class="widget">
           <h4>Navigation</h4>
           <ul class="list-unstyled">
-            <li><a href="<?=url('/')?>">Home</a></li>
+            <li><a href="<?= url('/') ?>">Home</a></li>
             <?php foreach (FunctionController::get_category() as $l) : ?>
-              <li><a href="<?= url('cat/'.$l->slug_url) ?>"><?= $l->name ?></a></li>
+              <li><a href="<?= url('cat/' . $l->slug_url) ?>"><?= $l->name ?></a></li>
             <?php endforeach; ?>
           </ul>
         </aside>
@@ -55,16 +56,38 @@ use App\Http\Controllers\client\FunctionController;
 <script>
   /*** add active class and stay opened when selected ***/
   var url = window.location;
-  var server = window.location.origin+'/';
+  var server = window.location.origin + '/';
   // for sidebar menu entirely but not cover treeview
   $('ul.nav a').filter(function() {
     if (this.href) {
-      return this.href == url || (url.href.indexOf(this.href+'/') == 0);
+      return this.href == url || (url.href.indexOf(this.href + '/') == 0);
     }
   }).addClass('active');
   //Dashboard
   window.location.href == server ? $('.home').addClass('active') : $('.home').removeClass('active');
 </script>
+<script>
+  $(function() {
+    $('.remove-cart').on('click',function(){
+      const id=$(this).attr('data-id');
+      $.ajax({
+        url:"{{url('remove_cart')}}",
+        type:'post',
+        dataType:'json',
+        data:{_token:'{{csrf_token()}}',id},
+        success:function(data){
+          if(data.status){
+            toastr.error('Product removed from cart');
+            location.reload();
+          }
+        },error:function(response){
+          console.log({error:response});
+        }
+      })
+    })
+  })
+</script>
 @stack('js')
 </body>
+
 </html>

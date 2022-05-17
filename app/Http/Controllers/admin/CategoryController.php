@@ -56,7 +56,7 @@ class CategoryController extends Controller
         $id = $request->id;
         $img_rule = $id > 0 ? 'mimes:png,jpg,jpeg|dimensions:min_width=70,min-width=70' : 'required|mimes:png,jpg,jpeg|dimensions:min_width=70,min-width=70';
         $request->validate([
-            'name' => 'required|max:50',
+            'name' => 'required|max:50|unique:categories,name,'.$request->id,
             'categoryorder' => 'required|numeric',
             'image' => $img_rule,
             'isactive' => 'required'

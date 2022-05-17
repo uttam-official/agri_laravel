@@ -67,7 +67,7 @@ class ProductController extends Controller
             'id' => 'required|numeric|min:0',
             'category' => 'required|numeric',
             'subcategory' => 'required|numeric',
-            'name' => 'required',
+            'name' => 'required|unique:products,name,'.$request->id,
             'price' => 'required|numeric',
             'image' => $imageValidation,
             'gallery.*' => 'required|max:102410|dimensions:min_width=1000,min_height=1000|mimes:jpg,png,jpeg'

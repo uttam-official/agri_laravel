@@ -41,15 +41,15 @@ class ClientController extends Controller
                 $join->on('s.id', '=', 'p.subcategory')
                     ->where('s.isactive', '=', 1);
             })
-            ->leftJoin('productgallery as g',function($join){
-                $join->on('p.id','=','g.product_id');
+            ->leftJoin('productgallery as g', function ($join) {
+                $join->on('p.id', '=', 'g.product_id');
             })
-            ->select('p.*','c.name as category_name','c.slug_url as category_slug','s.name as subcategory_name','s.slug_url as subcategory_slug',DB::raw('group_concat(g.extension) as gallery'))
+            ->select('p.*', 'c.name as category_name', 'c.slug_url as category_slug', 's.name as subcategory_name', 's.slug_url as subcategory_slug', DB::raw('group_concat(g.extension) as gallery'))
             ->where('p.slug_url', '=', $uri)
             ->where('p.isactive', '=', 1)
             ->groupBy('p.id')
             ->get()->first();
-            // var_dump($data);exit;
+        // var_dump($data);exit;
         $data['related'] = $this->get_related_product($data['product']->category, $data['product']->id);
 
         return view('client/product', $data);
@@ -82,7 +82,7 @@ class ClientController extends Controller
             ->select('p.*')
             ->where('p.isactive', '=', 1)
             ->get()->all();
-        return view('client.category',$data);
+        return view('client.category', $data);
     }
     public function get_related_product($c_id, $p_id)
     {
@@ -91,10 +91,63 @@ class ClientController extends Controller
                 $join->on('p.category', '=', 'c.id')
                     ->where('c.id', '=', $c_id);
             })
-            ->select('p.id','p.name','p.slug_url','p.price','p.image_extension')
+            ->select('p.id', 'p.name', 'p.slug_url', 'p.price', 'p.image_extension')
             ->where('p.isactive', '=', 1)
             ->where('p.id', '<>', $p_id)
             ->get()->all();
         return $related;
+    }
+    protected function cart(){
+        $data['page_data']=session()->has('cart')?session()->get('cart'):array();
+        return view('client.cart',$data);
+    }
+    protected function add_to_cart(Request $request)
+    {
+        $id = $request->id;
+        $qty=$request->qty;
+        if (session()->has('cart.' . $id)) {
+            $product=session()->pull('cart.'.$id);
+            $product->qty+=$qty;
+            session()->put('cart.'.$id,$product);
+        } else {
+            $product = DB::table('products')
+                ->select('id', 'name','slug_url', 'image_extension', 'price')
+                ->where('id', '=', $id)
+                ->where('isactive', '=', 1)
+                ->get()->first();
+            $product->qty = $qty;
+            session()->put('cart.'.$id,$product);
+        }
+        echo json_encode(['status' => 1]);
+    }
+    protected function remove_cart(Request $request){
+        session()->forget('cart.'.$request->id);
+        session()->forget('checkout');
+        echo json_encode(['status'=>1]);
+    }
+    public function get_session()
+    {
+        session()->forget('cart');
+        var_dump(session()->get('cart'));
+    }
+    protected function validate_coupon(Request $request){
+        $coupon=DB::table('discounts')
+        ->select('validfrom','validtill','amount','type')
+        ->where('isactive','=',1)
+        ->where('name','=',$request->coupon)
+        ->get()->first();
+        if ($coupon!=null) {
+            $validfrom = $coupon->validfrom;
+            $validtill = $coupon->validtill;
+            $stat1 = $validfrom != null ? (date('Y-m-d', strtotime($validfrom)) <= date('Y-m-d') ? 1 : 0) : 1;
+            $stat2 = $validtill != null ? (date('Y-m-d', strtotime($validtill)) >= date('Y-m-d') ? 1 : 0) : 1;
+            if ($stat1 && $stat2) {
+                return ['status' => true, 'amount' => $coupon->amount, 'type' => $coupon->type];
+            } else {
+                return ['status' => false];
+            }
+        } else {
+            return ['status' => false];
+        }
     }
 }

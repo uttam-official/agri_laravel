@@ -40,10 +40,9 @@ class DiscountController extends Controller
         }
     }
     protected function save(Request $request){
-        $validName=$request->id>0?'required|alpha_num|max:20':'required|alpha_num|max:20|unique:discounts';
         $request->validate([
             'id'=>'required|numeric|min:0',
-            'name'=>$validName,
+            'name'=>'required|alpha_num|max:20|unique:discounts,name,'.$request->id,
             'type'=>'required|numeric|min:1|max:2',
             'amount'=>'required|numeric|min:1',
             'isactive'=>'required'

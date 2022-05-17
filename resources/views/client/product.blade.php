@@ -1,6 +1,40 @@
 @push('title')
 {{$product->name}}
 @endpush
+@push('js')
+<script>
+  $(function() {
+    $('#add_cart_form').on('submit', function(e) {
+      e.preventDefault();
+      const id = $('#id').val();
+      const qty = $('#input-quantity').val();
+      const parameter = {
+        _token: '{{csrf_token()}}',
+        id,
+        qty
+      };
+      $.ajax({
+        url: '{{url("add_to_cart")}}',
+        method: 'post',
+        dataType: 'json',
+        data: parameter,
+        success: function(data) {
+          if(data.status){
+            $('#input-quantity').val(1);
+            toastr.success('Product added to Cart');
+            location.reload();
+          }
+        },
+        error: function(response) {
+          console.log({
+            error: response
+          });
+        }
+      })
+    })
+  })
+</script>
+@endpush
 @extends('client.layouts.main')
 @section('main-section')
 <style>
@@ -41,7 +75,7 @@
               @isset($product->gallery)
               @foreach (explode(',', $product->gallery) as $l)
               <a href="#" data-image="{{asset('upload/productgallery/medium/'.$l)}}" data-zoom-image="{{asset('upload/productgallery/large/'.$l)}}">
-                <img id="zoom_01" src="{{asset('upload/productgallery/small/'.$l)}}"/>
+                <img id="zoom_01" src="{{asset('upload/productgallery/small/'.$l)}}" />
               </a>
               @endforeach
               @endisset
@@ -66,10 +100,10 @@
               <p><?= $product->description ?></p>
 
               <div id="product">
-                <form action="" method="POST" class="form-group clearfix">
+                <form action="" method="POST" id="add_cart_form" class="form-group clearfix">
                   <label for="input-quantity" class="control-label">Qty</label>
                   <input type="number" min="1" ; class="form-control" id="input-quantity" size="2" value="1" name="quantity" vk_106cf="subscribed" required>
-                  <input type="hidden" value="<?= $product->id ?>" name="product_id">
+                  <input type="hidden" value="<?= $product->id ?>" name="product_id" id="id">
                   <button class="btn btn-default btn-lg" id="button-cart" type="submit" name="add_to_cart" value="add_to_cart" <?= $product->availability == 0 ? "disabled" : ""; ?>>Add to Cart</button>
                 </form>
               </div>
@@ -86,7 +120,7 @@
                   </div>
                   <div class="col-lg-6">
                     <div class="pull-right">
-                      <img src="images/addthis.jpg" alt="">
+                      <img src="{{asset('client/images/addthis.jpg')}}" alt="">
                     </div>
                   </div>
                 </div>
@@ -154,29 +188,29 @@
           <h3>Related Products</h3>
           <div class="row">
             <div id="carouse21" class="owl-carousel">
-             @foreach ($related as $l)
-                <div class="item">
-                  <div class="product-layout">
-                    <div class="product-thumb transition">
-                      <a href="{{url($l->slug_url)}}">
-                        <div class="image" style="display:flex;align-items:center;height: 150px;">
-                          <img src="{{asset('upload/product/medium/'.$l->id . '.' . $l->image_extension)}}" alt="" title="" class="img-responsive" />
-                        </div>
-                      </a>
-                      <div class="caption">
-                        <h4><a href="#">{{$l->name }}</a></h4>
-                        <div class="rating">
-                          <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
-                          <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
-                          <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
-                          <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
-                          <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
-                        </div>
-                        <p class="price">&#8364; {{ $l->price }}</p>
+              @foreach ($related as $l)
+              <div class="item">
+                <div class="product-layout">
+                  <div class="product-thumb transition">
+                    <a href="{{url($l->slug_url)}}">
+                      <div class="image" style="display:flex;align-items:center;height: 150px;">
+                        <img src="{{asset('upload/product/medium/'.$l->id . '.' . $l->image_extension)}}" alt="" title="" class="img-responsive" />
                       </div>
+                    </a>
+                    <div class="caption">
+                      <h4><a href="#">{{$l->name }}</a></h4>
+                      <div class="rating">
+                        <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
+                        <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
+                        <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
+                        <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
+                        <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
+                      </div>
+                      <p class="price">&#8364; {{ $l->price }}</p>
                     </div>
                   </div>
                 </div>
+              </div>
               @endforeach
             </div>
           </div>
