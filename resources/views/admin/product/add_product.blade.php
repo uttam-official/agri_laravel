@@ -1,3 +1,8 @@
+<?php
+use App\Http\Controllers\admin\ProductController;
+if(old('category')!='' && old('subcategory')!='')
+$subcategory_list=ProductController::get_subcategory_by_id(old('category'));
+?>
 @extends('admin.layouts.main')
 @push('title')
 {{$title}}
@@ -99,13 +104,13 @@
                                 <label>Subcategory <span class="text-danger">*</span></label>
                             </div>
                             <div class="col-md-10">
-                            @php $_selected_subcat=$product->subcategory ?? old('subcategory') ?? '' @endphp
+                                @php $_selected_subcat=$product->subcategory ?? old('subcategory') ?? '' @endphp
                                 <select name="subcategory" id="subcategory" class="form-control text-uppercase @error('subcategory') is-invalid @enderror">
                                     <option value="" disabled selected>---Select a Subcategory---</option>
                                     @isset($subcategory_list)
-                                        @foreach($subcategory_list as $sl)
-                                        <option value="{{$sl->id}}" {{$sl->id==$_selected_subcat?'selected':''}} >{{$sl->name}}</option>
-                                        @endforeach
+                                    @foreach($subcategory_list as $sl)
+                                    <option value="{{$sl->id}}" {{$sl->id==$_selected_subcat?'selected':''}}>{{$sl->name}}</option>
+                                    @endforeach
                                     @endisset
                                 </select>
                                 @error('subcategory')
@@ -149,7 +154,7 @@
                         <div class="row">
                             <div class="offset-md-3 col-md-2">
                                 @isset($product->image_extension)
-                                            <img src="{{url('upload/product/small').'/'.$id.'.'.$product->image_extension}}" class="d-block mx-auto image-responsive mb-3" >
+                                <img src="{{url('upload/product/small').'/'.$id.'.'.$product->image_extension}}" class="d-block mx-auto image-responsive mb-3">
                                 @endisset
                             </div>
                         </div>
@@ -176,18 +181,18 @@
                                 @php $_selected_avi=old('availability') ?? $product->availability ?? 1 @endphp
                                 <select name="availability" class="form-control">
                                     <option value="1" selected>In Stock</option>
-                                    <option value="0"{{$_selected_avi==0?'selected':''}}>Out of Stock</option>
+                                    <option value="0" {{$_selected_avi==0?'selected':''}}>Out of Stock</option>
                                 </select>
                             </div>
                         </div>
                         <div class="row gallery mb-3">
                             <div class="col-md-2"></div>
                             @isset($product->gallery)
-                                @foreach($product->gallery as $g)
-                                    <div class="col-md-2 mb-1">
-                                        <img src="{{url('upload/productgallery/small').'/'.$g->extension}}" alt="" class="image-responsive d-block mx-auto">
-                                    </div>
-                                @endforeach
+                            @foreach($product->gallery as $g)
+                            <div class="col-md-2 mb-1">
+                                <img src="{{url('upload/productgallery/small').'/'.$g->extension}}" alt="" class="image-responsive d-block mx-auto">
+                            </div>
+                            @endforeach
                             @endisset
                         </div>
                         <div class="row form-group">
@@ -208,7 +213,7 @@
                         <div class="row form-group">
                             <div class="offset-md-2 col-md-10 row">
                                 <div class="col-md-3 form-check">
-                                @php $_selected_sp=old('special')??$product->special??''  @endphp
+                                    @php $_selected_sp=old('special')??$product->special??'' @endphp
                                     <input type="checkbox" name="special" class="form-check-input @error('special') is-invalid @enderror" {{$_selected_sp==1?'checked':''}}>
                                     <label class="form-check-label">Add to Special Product</label>
                                 </div>

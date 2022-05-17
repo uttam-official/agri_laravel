@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\admin\ImageController;
 use App\Models\Product;
 use App\Models\Productgallery;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -81,6 +82,7 @@ class ProductController extends Controller
             $hasImage = $request->hasFile('image');
             $hasImage ? $image = $request->file('image') : '';
             $product->name = $request->name;
+            $product->slug_url = Str::slug($request->name);
             $product->description = $request->description;
             $product->category = $request->category;
             $product->subcategory = $request->subcategory;
@@ -107,6 +109,7 @@ class ProductController extends Controller
             $image = $request->file('image');
             $product = new Product();
             $product->name = $request->name;
+            $product->slug_url = Str::slug($request->name);
             $product->description = $request->description;
             $product->category = $request->category;
             $product->subcategory = $request->subcategory;
@@ -147,7 +150,7 @@ class ProductController extends Controller
         $subcategory = $this->get_subcategory_by_id($request->category);
         echo json_encode($subcategory);
     }
-    protected function get_subcategory_by_id($id)
+    public static function get_subcategory_by_id($id)
     {
         $subcategory = DB::table('categories as s')
             ->join('categories as c', function ($join) {

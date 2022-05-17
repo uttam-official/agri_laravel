@@ -50,7 +50,7 @@ class SubcategoryController extends Controller
         $request->validate([
             'id' => 'required|numeric|min:0',
             'parent' => 'required',
-            'name' => 'required|max:50',
+            'name' => 'required|max:50|unique:categories,name,'.$request->id,
             'categoryorder' => 'required|numeric',
             'isactive' => 'required'
         ]);

@@ -26,8 +26,6 @@ use App\Http\Controllers\admin\ProductController;
 /
 */
 
-
-Route::get('/',[ClientController::class,'index']);
 //IS ADMIN NEED LOGIN
 Route::middleware(['isadminneedlogged'])->group(function(){
     Route::get('/admin/login',[AdminController::class,'login']);
@@ -67,3 +65,6 @@ Route::middleware(['isadminlogged'])->group(function(){
 /
 */
 
+Route::get('/',[ClientController::class,'index']);
+Route::get('/cat/{uri}/{uri2?}',[ClientController::class,'category']);
+Route::get('/{uri}',[ClientController::class,'product']);
