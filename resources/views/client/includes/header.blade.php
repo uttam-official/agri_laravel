@@ -1,6 +1,8 @@
-<?php 
+<?php
+
 use App\Http\Controllers\client\FunctionController;
-$page_data=FunctionController::get_cart();
+
+$page_data = FunctionController::get_cart();
 ?>
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
@@ -40,12 +42,12 @@ $page_data=FunctionController::get_cart();
       <?php
       session_status() == 1 ? session_start() : '';
       $cart = session()->has('cart') ? count(session()->get('cart')) : 0;
-      if (isset($_SESSION['user_id']) && isset($_SESSION['user_id']) != null) {
+      if (session()->has('user_id') && session()->get('user_id') != null) {
         $log_text = "Logout";
-        $log_url = "logout.php";
+        $log_url = url('logout');
       } else {
         $log_text = "Login";
-        $log_url = "login.php";
+        $log_url = url('login');
       }
       ?>
       <div id="top-links2">
@@ -86,7 +88,7 @@ $page_data=FunctionController::get_cart();
                           </td>
                           <td class="text-left" style="width:200px"><a href="{{url($value->slug_url)}}">{{$value->name}}</a>
                           </td>
-                          <td class="text-right">x {{ $value->qty }}</td>
+                          <td class="text-right">x <span id="qty_mini">{{ $value->qty }}</span></td>
                           <td class="text-right">{{ $value->qty * $value->price }}</td>
                           <td class="text-center"><a data-id="{{$id}}" class="remove-cart btn btn-danger btn-xs" title="Remove" onclick=""><i class="fa fa-times"></i></a></td>
                         </tr>
@@ -100,15 +102,15 @@ $page_data=FunctionController::get_cart();
                       <tbody>
                         <tr>
                           <td class="text-right"><strong>Sub-Total</strong></td>
-                          <td class="text-right">${{ $subtotal }}</td>
+                          <td class="text-right">$<span id="subtotal_mini">{{ $subtotal }}</span></td>
                         </tr>
                         <tr>
                           <td class="text-right"><strong>Eco Tax (-2.00)</strong></td>
-                          <td class="text-right">${{ $ecotax }}</td>
+                          <td class="text-right">$<span id="eco_mini">{{ $ecotax }}</span></td>
                         </tr>
                         <tr>
                           <td class="text-right"><strong>VAT (20%)</strong></td>
-                          <td class="text-right">${{ $vat = $subtotal * 20 / 100; }}</td>
+                          <td class="text-right">$<span id="vat_mini">{{ $vat = $subtotal * 20 / 100; }}</span></td>
                         </tr>
                         <tr>
                           <td class="text-right"><strong>Total</strong></td>
@@ -129,7 +131,36 @@ $page_data=FunctionController::get_cart();
                         text: 'Your cart is empty !'
                       });
                     } else {
-                      window.location = "checkout.php";
+                      var subtotal = Number($('#subtotal_mini').html());
+                      var vat = Number($('#vat_min').html());
+                      var ecotax = Number($('#ecotax_mini').html());
+                      var total = Number($('#total_mini').html());
+                      var discount = 0;
+      
+                      var parameter = {
+                        _token: "{{csrf_token()}}",
+                        subtotal,
+                        discount,
+                        vat,
+                        ecotax,
+                        total
+                      };
+                      $.ajax({
+                        url: "{{url('checkout')}}",
+                        type: 'post',
+                        data: parameter,
+                        dataType: 'json',
+                        success: function(data) {
+                          if (data.status) {
+                            window.location = "{{url('login')}}";
+                          }
+                        },
+                        error: function(response) {
+                          console.log({
+                            'error': response
+                          });
+                        }
+                      });
                     }
                   })
                 </script>

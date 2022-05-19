@@ -3,12 +3,19 @@
 Cart
 @endpush
 @push('js')
+
+@if(session()->has('payment_error'))
+<script>
+    toastr.error("{{session()->get('payment_error')}}");
+</script>
+@endif
+
 <script>
     $('#button-coupon').on('click', function() {
         var coupon = $('#input-coupon').val();
         if (coupon != "") {
             var parameter = {
-                _token:"{{csrf_token()}}",
+                _token: "{{csrf_token()}}",
                 'coupon': coupon
             };
             $.ajax({
@@ -78,6 +85,7 @@ Cart
             return 1;
         }
         var parameter = {
+            _token: "{{csrf_token()}}",
             subtotal,
             discount,
             vat,
@@ -85,13 +93,13 @@ Cart
             total
         };
         $.ajax({
-            url: 'cart.php',
+            url: "{{url('checkout')}}",
             type: 'post',
             data: parameter,
             dataType: 'json',
             success: function(data) {
                 if (data.status) {
-                    window.location = "login.php";
+                    window.location = "{{url('login')}}";
                 }
             },
             error: function(response) {
@@ -101,6 +109,34 @@ Cart
             }
         });
     });
+    $(function() {
+        $('.update_cart').on('submit', function(e) {
+            e.preventDefault();
+            const form = new FormData(this);
+            // console.log(form.get('id'));
+            const parameter = {
+                _token: "{{csrf_token()}}",
+                id: form.get('id'),
+                qty: form.get('quantity')
+            };
+            $.ajax({
+                url: "{{url('update_cart')}}",
+                type: 'post',
+                dataType: 'json',
+                data: parameter,
+                success: function(data) {
+                    if (data.status) {
+                        location.reload();
+                    }
+                },
+                error: function(response) {
+                    console.log({
+                        error: response
+                    });
+                }
+            });
+        })
+    })
 </script>
 @endpush
 @section('main-section')
@@ -138,15 +174,15 @@ Cart
                                 $subtotal += $value->qty * $value->price; ?>
                                 <tr>
                                     <td class="text-left"><a href="{{url($value->slug_url)}}"><img class="img-thumbnail" src="{{asset('upload/product/small/'.$value->id . '.' . $value->image_extension)}}" alt=""></a></td>
-                                    <td class="text-left"><a href="{{url($value->slug_url)}}"><?= $value->name?></a></td>
+                                    <td class="text-left"><a href="{{url($value->slug_url)}}"><?= $value->name ?></a></td>
                                     <td class="text-left">€<?= $value->price ?></td>
                                     <td class="text-left">
-                                        <form style="max-width: 200px;" class="input-group btn-block" action="" method="POST">
+                                        <form style="max-width: 200px;" class="input-group btn-block update_cart" action="#" id="" method="POST">
                                             <input type="hidden" name="id" value="<?= $id ?>">
                                             <input type="number" min="1" class="form-control" size="1" value="<?= $value->qty ?>" name="quantity" required>
                                             <span class="input-group-btn">
                                                 <button class="btn btn-primary" data-toggle="tooltip" type="submit"><i class="fa fa-refresh"></i></button>
-                                                <a  data-id="{{$id}}" class="btn btn-danger remove-cart" data-toggle="tooltip"><i class="fa fa-times-circle"></i></a>
+                                                <a data-id="{{$id}}" class="btn btn-danger remove-cart" data-toggle="tooltip"><i class="fa fa-times-circle"></i></a>
                                             </span>
                                         </form>
                                     </td>
