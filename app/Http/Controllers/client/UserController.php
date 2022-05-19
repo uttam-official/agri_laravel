@@ -17,13 +17,16 @@ class UserController extends Controller
             'password'=>'required'
         ]);
         $password=$request->password;
-        $customer=Customer::where('isactive','=',1)->where('email','=',$request->email)->get(['id','password'])->first();
+        $customer=Customer::where('isactive','=',1)->where('email','=',$request->email)->get(['id','firstname','lastname','email','password'])->first();
         $status=false;
         if($customer!=null){
             $status=password_verify($password,$customer->password);
         }
         if($status){
             session()->put('user_id',$customer->id);
+            session()->put('user_first_name',$customer->firstname);
+            session()->put('user_last_name',$customer->lastname);
+            session()->put('user_email',$customer->email);
             return redirect('/billing');
         }else{
             return redirect('login')->with('login_error','Enter valid email and password');
@@ -78,6 +81,8 @@ class UserController extends Controller
     }
     protected function logout(){
         session()->forget('user_id');
+        session()->forget('user_email');
+        session()->forget('user_name');
         return redirect('login');
     }
 }

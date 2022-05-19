@@ -3,6 +3,7 @@
 {{$title}}
 @endpush
 @push('js')
+
 @endpush
 @section('main-section')
 <div class="banner-in">

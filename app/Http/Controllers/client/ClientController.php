@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Address;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class ClientController extends Controller
 {
@@ -138,7 +139,7 @@ class ClientController extends Controller
     }
     public function get_session()
     {
-        session()->forget('shipping_address');
+        // session()->forget('shipping_address');
         var_dump(session()->all());
     }
     protected function validate_coupon(Request $request)
@@ -164,27 +165,15 @@ class ClientController extends Controller
     }
     protected function checkout(Request $request)
     {
-        if (session()->has('cart') && session()->get('cart') != null) {
-            $subtotal = 0;
-            $ecotax = 0;
-            foreach (session()->get('cart') as $id => $value) {
-                $ecotax += 2;
-                $subtotal += $value->qty * $value->price;
-            }
-            $vat = $subtotal * 20 / 100;
-            $total = $subtotal + $ecotax + $vat;
-            $checkout = [
-                "subtotal" => $subtotal,
-                "discount" => 0,
-                "vat" => $vat,
-                "ecotax" => $ecotax,
-                "total" => $total
-            ];
-            session()->put('checkout', $checkout);
-            echo json_encode(['status' => 1]);
-        } else {
-            echo json_encode(['status' => 0]);
-        }
+        $checkout = [
+            "subtotal" => $request->subtotal,
+            "discount" => $request->discount,
+            "vat" => $request->vat,
+            "ecotax" => $request->ecotax,
+            "total" => $request->total
+        ];
+        session()->put('checkout', $checkout);
+        echo json_encode(['status' => 1]);
     }
     public function billing()
     {
@@ -236,35 +225,164 @@ class ClientController extends Controller
             return redirect('cart')->with('payment_error', 'Please check out first');
         }
     }
-    public function success(){
-        if(session()->has('order_success')){
-            $data['title']="Order Success";
-            $data['order_id']=session()->get('order_success');
-            return view('client.success');
-        }else{
+    public function success()
+    {
+        if (session()->has('order_success')) {
+            $data['title'] = "Order Success";
+            $data['order_id'] = session()->get('order_success');
+            return view('client.success', $data);
+        } else {
             return redirect('/');
         }
     }
-    protected function add_address(Request $request){
-        $address=new Address();
-        $address->customer_id=session()->get('user_id');
-        $address->company=$request->company;
-        $address->address1=$request->address1;
-        $address->address2=$request->address2;
-        $address->city=$request->city;
-        $address->postcode=$request->postcode;
-        $address->state=$request->state;
-        $address->country=$request->country;
+    protected function add_address(Request $request)
+    {
+        $address = new Address();
+        $address->customer_id = session()->get('user_id');
+        $address->company = $request->company;
+        $address->address1 = $request->address1;
+        $address->address2 = $request->address2;
+        $address->city = $request->city;
+        $address->postcode = $request->postcode;
+        $address->state = $request->state;
+        $address->country = $request->country;
         $address->save();
-        echo json_encode(['status'=>1]);
+        echo json_encode(['status' => 1]);
     }
-    public function cancel_order(){
+    public function cancel_order()
+    {
         session()->forget('cart');
         session()->forget('checkout');
         return redirect('/');
     }
-    protected function place_order(){
-        
-    }
+    protected function place_order()
+    {
+        $ordersummery = [
+            'customer_id' => session()->get('user_id'),
+            'billing_id' => session()->get('billing_address'),
+            'shipping_id' => session()->get('shipping_address'),
+            'subtotal' => session()->get('checkout.subtotal'),
+            'discount' => session()->get('checkout.discount'),
+            'vat' => session()->get('checkout.vat'),
+            'ecotax' => session()->get('checkout.ecotax'),
+            'total' => session()->get('checkout.total'),
+            'payment_status' => 1,
+            "created_at" =>  date('Y-m-d H:i:s'),
+            "updated_at" => date('Y-m-d H:i:s')
+        ];
+        $order_id = DB::table('ordersummery')->insertGetId($ordersummery);
+        foreach (session()->get('cart') as $l) {
+            $orderinfo = [
+                'ordersummery_id' => $order_id,
+                'product_id' => $l->id,
+                'product_price' => $l->price,
+                'quantity' => $l->qty,
+                "created_at" =>  date('Y-m-d H:i:s'),
+                "updated_at" => date('Y-m-d H:i:s')
+            ];
+            DB::table('orderinfo')->insert($orderinfo);
+        }
+        $this->send_confirmation(
+            $order_id,
+            session()->get('checkout'),
+            session()->get('cart'),
+            session()->get('billing_address'),
+            session()->get('shipping_address'),
+            session()->get('user_first_name'),
+            session()->get('user_last_name'),
+            session()->get('user_email'),
 
+        );
+        session()->forget('checkout');
+        session()->forget('cart');
+        return redirect('/success')->with('order_success', $order_id);
+    }
+    protected function send_confirmation($order_id, $checkout, $cart, $billing, $shipping, $firstname, $lastname, $email)
+    {
+        $name = $firstname . ' ' . $lastname;
+        $email = session()->get('user_email');
+        $data['order_id'] = $order_id;
+        $data['billing'] = $this->get_address($billing);
+        $data['shipping'] = $this->get_address($shipping);
+        $data['cart'] = $this->get_cart_product($cart);
+        $data['checkout'] = (object) $checkout;
+        $data['firstname'] = $firstname;
+        $data['lastname'] = $lastname;
+
+        Mail::send('client.email_template.ordersuccess', $data, function ($message) use ($order_id, $name, $email) {
+            $message->to($email)->subject('Order Confirmation #' . $order_id);
+        });
+    }
+    protected function get_address($id)
+    {
+        $data = (array) DB::table('addresses')->where('id', '=', $id)->get(['company', 'address1', 'address2', 'city', 'state', 'country', 'postcode'])->first();
+        return implode(',', array_filter($data));
+    }
+    protected function get_cart_product($cart)
+    {
+        $data = '';
+        foreach ($cart as $l) {
+            $data .= $this->get_single_cart_product($l);
+        }
+        return $data;
+    }
+    protected function get_single_cart_product($l)
+    {
+        return '
+        <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+        <tbody>
+          <tr>
+            <td class="o_bg-light o_px-xs" align="center" style="background-color: #dbe5ea;padding-left: 8px;padding-right: 8px;">
+              <!--[if mso]><table width="632" cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td><![endif]-->
+              <table class="o_block" width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation" style="max-width: 632px;margin: 0 auto;">
+                <tbody>
+                  <tr>
+                    <td class="o_re o_bg-white o_px o_pt" align="center" style="font-size: 0;vertical-align: top;background-color: #ffffff;padding-left: 16px;padding-right: 16px;padding-top: 16px;">
+                      <!--[if mso]><table cellspacing="0" cellpadding="0" border="0" role="presentation"><tbody><tr><td width="200" align="center" valign="top" style="padding: 0px 8px;"><![endif]-->
+                      <div class="o_col o_col-2 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 200px;">
+                        <div class="o_px-xs o_sans o_text o_center" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;text-align: center;padding-left: 8px;padding-right: 8px;">
+                          <p style="margin-top: 0px;margin-bottom: 0px;"><a class="o_text-primary" href="#" style="text-decoration: none;outline: none;color: #126de5;"><img src="'.asset('upload/product/medium/'.$l->id.'.'.$l->image_extension).'" width="184" height="184" alt="" style="max-width: 184px;-ms-interpolation-mode: bicubic;vertical-align: middle;border: 0;line-height: 100%;height: auto;outline: none;text-decoration: none;"></a></p>
+                        </div>
+                      </div>
+                      <!--[if mso]></td><td width="300" align="left" valign="top" style="padding: 0px 8px;"><![endif]-->
+                      <div class="o_col o_col-3 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 300px;">
+                        <div style="font-size: 24px; line-height: 24px; height: 24px;">&nbsp; </div>
+                        <div class="o_px-xs o_sans o_text o_text-light o_left o_xs-center" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;color: #82899a;text-align: left;padding-left: 8px;padding-right: 8px;">
+                          <h4 class="o_heading o_text-dark o_mb-xxs" style="font-family: Helvetica, Arial, sans-serif;font-weight: bold;margin-top: 0px;margin-bottom: 4px;color: #242b3d;font-size: 18px;line-height: 23px;">' . $l->name . '</h4>
+                          
+                          <p class="o_text-xs o_mb-xs" style="font-size: 14px;line-height: 21px;margin-top: 0px;margin-bottom: 8px;">
+                            Price: ' . $l->price . '<br>
+                            Quantity: ' . $l->qty . '
+                          </p>
+                        </div>
+                      </div>
+                      <!--[if mso]></td><td width="100" align="right" valign="top" style="padding: 0px 8px;"><![endif]-->
+                      <div class="o_col o_col-1 o_col-full" style="display: inline-block;vertical-align: top;width: 100%;max-width: 100px;">
+                        <div class="o_hide-xs" style="font-size: 24px; line-height: 24px; height: 24px;">&nbsp; </div>
+                        <div class="o_px-xs o_sans o_text o_text-secondary o_right o_xs-center" style="font-family: Helvetica, Arial, sans-serif;margin-top: 0px;margin-bottom: 0px;font-size: 16px;line-height: 24px;color: #424651;text-align: right;padding-left: 8px;padding-right: 8px;">
+                          <p style="margin-top: 0px;margin-bottom: 0px;">$' . $l->price * $l->qty . '</p>
+                        </div>
+                      </div>
+                      <!--[if mso]></td></tr><tr><td colspan="3" style="padding: 0px 8px;"><![endif]-->
+                      <div class="o_px-xs" style="padding-left: 8px;padding-right: 8px;">
+                        <table width="100%" cellspacing="0" cellpadding="0" border="0" role="presentation">
+                          <tbody>
+                            <tr>
+                              <td class="o_re o_bb-light" style="font-size: 16px;line-height: 16px;height: 16px;vertical-align: top;border-bottom: 1px solid #d3dce0;">&nbsp; </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <!--[if mso]></td></tr></table><![endif]-->
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <!--[if mso]></td></tr></table><![endif]-->
+            </td>
+          </tr>
+        </tbody>
+      </table>
+        ';
+    }
 }

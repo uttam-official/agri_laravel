@@ -106,7 +106,7 @@ $page_data = FunctionController::get_cart();
                         </tr>
                         <tr>
                           <td class="text-right"><strong>Eco Tax (-2.00)</strong></td>
-                          <td class="text-right">$<span id="eco_mini">{{ $ecotax }}</span></td>
+                          <td class="text-right">$<span id="ecotax_mini">{{ $ecotax }}</span></td>
                         </tr>
                         <tr>
                           <td class="text-right"><strong>VAT (20%)</strong></td>
@@ -132,7 +132,7 @@ $page_data = FunctionController::get_cart();
                       });
                     } else {
                       var subtotal = Number($('#subtotal_mini').html());
-                      var vat = Number($('#vat_min').html());
+                      var vat = Number($('#vat_mini').html());
                       var ecotax = Number($('#ecotax_mini').html());
                       var total = Number($('#total_mini').html());
                       var discount = 0;
