@@ -4,10 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\client\ClientController;
 use App\Http\Controllers\admin\AdminController;
 use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\admin\CustomerController;
 use App\Http\Controllers\admin\SubcategoryController;
 use App\Http\Controllers\admin\DiscountController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\client\UserController;
+use App\Http\Controllers\admin\OrderController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -55,6 +58,17 @@ Route::middleware(['isadminlogged'])->group(function () {
     Route::post('admin/product/add', [ProductController::class, 'save']);
     Route::get('/admin/product/delete/{id}', [ProductController::class, 'delete']);
     Route::post('/admin/subcategory/get', [ProductController::class, 'get_subcategory']);
+    Route::get('/admin/customer',[CustomerController::class,'index']);
+    Route::get('/admin/customer/edit/{id}',[CustomerController::class,'edit']);
+    Route::post('/admin/customer/edit',[CustomerController::class,'edit_customer']);
+    Route::post('/admin/customer/edit_address',[CustomerController::class,'edit_address']);
+    Route::get('/admin/customer/delete/{id}',[CustomerController::class,'delete']);
+    Route::get('/admin/customer/order/{id}',[CustomerController::class,'order']);
+    Route::post('/admin/order/cancel',[OrderController::class,'cancel']);
+    Route::get('/admin/order/delete/{id}',[OrderController::class,'delete']);
+    Route::get('admin/order',[OrderController::class,'index']);
+    Route::get('admin/order/edit/{id}',[OrderController::class,'edit']);
+    Route::post('admin/order/edit',[OrderController::class,'edit_order']);
 });
 
 
