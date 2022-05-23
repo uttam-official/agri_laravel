@@ -12,6 +12,7 @@ class FunctionController extends Controller
         $category = DB::table('categories')
             ->select('id','name', 'slug_url')->where('isactive', '=', 1)
             ->where('parent', '=', 0)
+            ->orderBy('categoryorder')
             ->get()->all();
         return $category;
     }
@@ -20,6 +21,7 @@ class FunctionController extends Controller
         $subcategory = DB::table('categories')
             ->select('name', 'slug_url')->where('isactive', '=', 1)
             ->where('parent', '=', $id)
+            ->orderBy('categoryorder')
             ->get()->all();
         return $subcategory;
     }

@@ -11,6 +11,7 @@ Order Management
     $(function() {
         $('.cancel_order').on('click', function() {
             const id = $(this).attr('data-id');
+            $(this).addClass('disabled');
             const data = {
                 _token: "{{csrf_token()}}",
                 id,
@@ -23,7 +24,7 @@ Order Management
                 data,
                 success: function(data) {
                     if(data.status){
-                        toastr.error('Order id: ' +id+ ' canceled successfully!');
+                        //toastr.error('Order # ' +id+ ' canceled successfully!');
                         location.reload();
                     }
                 },

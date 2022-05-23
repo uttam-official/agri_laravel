@@ -168,27 +168,32 @@ Cart
                             </tr>
                         </thead>
                         <tbody>
-                            <?php $subtotal = 0;
-                            $ecotax = 0;
-                            foreach ($page_data as $id => $value) : $ecotax += 2;
-                                $subtotal += $value->qty * $value->price; ?>
-                                <tr>
-                                    <td class="text-left"><a href="{{url($value->slug_url)}}"><img class="img-thumbnail" src="{{asset('upload/product/small/'.$value->id . '.' . $value->image_extension)}}" alt=""></a></td>
-                                    <td class="text-left"><a href="{{url($value->slug_url)}}"><?= $value->name ?></a></td>
-                                    <td class="text-left">€<?= $value->price ?></td>
-                                    <td class="text-left">
-                                        <form style="max-width: 200px;" class="input-group btn-block update_cart" action="#" id="" method="POST">
-                                            <input type="hidden" name="id" value="<?= $id ?>">
-                                            <input type="number" min="1" class="form-control" size="1" value="<?= $value->qty ?>" name="quantity" required>
-                                            <span class="input-group-btn">
-                                                <button class="btn btn-primary" data-toggle="tooltip" type="submit"><i class="fa fa-refresh"></i></button>
-                                                <a data-id="{{$id}}" class="btn btn-danger remove-cart" data-toggle="tooltip"><i class="fa fa-times-circle"></i></a>
-                                            </span>
-                                        </form>
-                                    </td>
-                                    <td class="text-left">€<?= $value->qty * $value->price ?></td>
-                                </tr>
-                            <?php endforeach; ?>
+                            @php
+                            $subtotal = 0;
+                            $ecotax = 0
+                            @endphp
+                            @foreach ($page_data as $id => $value)
+                            @php
+                            $ecotax += 2;
+                            $subtotal += $value->qty * $value->price
+                            @endphp
+                            <tr>
+                                <td class="text-left"><a href="{{url($value->slug_url)}}"><img class="img-thumbnail" src="{{asset('upload/product/small/'.$value->id . '.' . $value->image_extension)}}" alt=""></a></td>
+                                <td class="text-left"><a href="{{url($value->slug_url)}}">{{ $value->name }}</a></td>
+                                <td class="text-left">€{{ $value->price }}</td>
+                                <td class="text-left">
+                                    <form style="max-width: 200px;" class="input-group btn-block update_cart" action="#" id="" method="POST">
+                                        <input type="hidden" name="id" value="{{ $id }}">
+                                        <input type="number" min="1" class="form-control" size="1" value="{{ $value->qty }}" name="quantity" required>
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-primary" data-toggle="tooltip" type="submit"><i class="fa fa-refresh"></i></button>
+                                            <a data-id="{{$id}}" class="btn btn-danger remove-cart" data-toggle="tooltip"><i class="fa fa-times-circle"></i></a>
+                                        </span>
+                                    </form>
+                                </td>
+                                <td class="text-left">€{{ $value->qty * $value->price }}</td>
+                            </tr>
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -637,7 +642,7 @@ Cart
                             <tbody>
                                 <tr>
                                     <td class="text-right"><strong>Sub-Total:</strong></td>
-                                    <td class="text-right">$<span id="subtotal"><?= $subtotal ?></span></td>
+                                    <td class="text-right">$<span id="subtotal">{{ $subtotal }}</span></td>
                                 </tr>
                                 <tr id="discount_tr" style="display: none;">
                                     <td class="text-right"><strong>Discount:</strong></td>
@@ -645,15 +650,15 @@ Cart
                                 </tr>
                                 <tr>
                                     <td class="text-right"><strong>Eco Tax (-2.00):</strong></td>
-                                    <td class="text-right">$<span id="ecotax"><?= $ecotax ?></span></td>
+                                    <td class="text-right">$<span id="ecotax">{{ $ecotax }}</span></td>
                                 </tr>
                                 <tr>
                                     <td class="text-right"><strong>VAT (20%):</strong></td>
-                                    <td class="text-right">$<span id="vat"><?= $vat = $subtotal * 20 / 100 ?></span></td>
+                                    <td class="text-right">$<span id="vat">{{ $vat = $subtotal * 20 / 100 }}</span></td>
                                 </tr>
                                 <tr>
                                     <td class="text-right"><strong>Total:</strong></td>
-                                    <td class="text-right">$<span id="total"><?= $subtotal + $vat + $ecotax ?></span></td>
+                                    <td class="text-right">$<span id="total">{{ $subtotal + $vat + $ecotax }}</span></td>
                                 </tr>
                             </tbody>
                         </table>

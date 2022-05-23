@@ -14,6 +14,7 @@ class CreateProductgalleryTable extends Migration
     public function up()
     {
         Schema::create('productgallery', function (Blueprint $table) {
+            $table->id();
             $table->bigInteger('product_id');
             $table->string('extension',20);
             $table->tinyInteger('isactive')->default(1);

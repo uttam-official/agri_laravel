@@ -62,7 +62,7 @@ Products
                                             <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
                                             <span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
                                         </div>
-                                        <p class="price">&#8364; <?= $l->price ?></p>
+                                        <p class="price">&#8364;  {{$l->price }}</p>
                                     </div>
                                 </div>
                             </div>

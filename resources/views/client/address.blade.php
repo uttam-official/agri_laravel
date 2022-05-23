@@ -69,29 +69,29 @@
         <form action="" method="post">
             @csrf
             <div class="row row-eq-height">
-                <?php foreach ($address as $l) : ?>
+                @foreach ($address as $l)
                     <div class="col-sm-3 " style="padding-bottom:19px;">
                         <div class="panel panel-default " style="height: 100%;">
                             <div class="panel-body" style="height: 84%;">
                                 <p>
-                                    <strong> Address: </strong><?= $l->company ? $l->company . ',' : '' ?> <?= $l->address1 ?>, <?= $l->address2 ? $l->address2 . ',' : '' ?> <?= $l->city ?> - <?= $l->postcode ?>
+                                    <strong> Address: </strong>{{ $l->company ? $l->company . ',' : '' }} {{ $l->address1 }}, {{ $l->address2 ? $l->address2 . ',' : '' }} {{ $l->city }} - {{ $l->postcode }}
                                 </p>
                                 <p>
-                                    <strong>Post code :</strong> <?= $l->postcode ?>
+                                    <strong>Post code :</strong> {{ $l->postcode }}
                                 </p>
                                 <p>
-                                    <strong>State :</strong> <?= $l->State ?>
+                                    <strong>State :</strong> {{ $l->State }}
                                 </p>
                                 <p>
-                                    <strong>Country :</strong> <?= $l->country ?>
+                                    <strong>Country :</strong> {{ $l->country }}
                                 </p>
                             </div>
                             <div class="panel-footer text-center">
-                                <input type="radio" name="address" value="<?= $l->id ?>" required>
+                                <input type="radio" name="address" value="{{ $l->id }}" required>
                             </div>
                         </div>
                     </div>
-                <?php endforeach; ?>
+                @endforeach
                 <div class="col-md-3 " style="padding-bottom:19px;">
                     <div class="panel panel-default" style="height: 100%;">
                         <div class="panel-body" style="HEIGHT:100%;display:flex;align-items:center;justify-content:center;">
@@ -102,7 +102,7 @@
                     </div>
                 </div>
             </div>
-            <button class="btn btn-primary" type="submit" name="<?= $btn_name ?>">NEXT</button>
+            <button class="btn btn-primary" type="submit" name="{{ $btn_name }}">NEXT</button>
         </form>
     </div>
 </div>

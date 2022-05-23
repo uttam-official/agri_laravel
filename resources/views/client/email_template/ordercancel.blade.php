@@ -1,0 +1,1 @@
+<p>Your Order <strong>#{{$order_id}}</strong> has been <strong style="color:crimson">cancled by seller</strong> on {{date('d-m-Y H:i:s')}}</p>

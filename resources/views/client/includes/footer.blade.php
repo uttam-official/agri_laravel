@@ -56,7 +56,7 @@ use App\Http\Controllers\client\FunctionController;
 <script>
   /*** add active class and stay opened when selected ***/
   var url = window.location;
-  var server = window.location.origin + '/';
+  var server = window.location.origin;
   // for sidebar menu entirely but not cover treeview
   $('ul.nav a').filter(function() {
     if (this.href) {

@@ -38,7 +38,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin/product/" class="nav-link">
+                    <a href="{{url('admin/product')}}" class="nav-link">
                         <i class="nav-icon fa fa-box-open"></i>
                         <p>
                             Product
@@ -46,7 +46,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin/order/" class="nav-link">
+                    <a href="{{url('admin/order')}}" class="nav-link">
                         <i class="nav-icon fa fa-shopping-cart"></i>
                         <p>
                             Order
@@ -54,7 +54,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin/discount/" class="nav-link">
+                    <a href="{{url('admin/discount')}}" class="nav-link">
                         <i class="nav-icon fa fa-percent"></i>
                         <p>
                             Discount
@@ -62,7 +62,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin/customer/" class="nav-link">
+                    <a href="{{url('admin/customer')}}" class="nav-link">
                         <i class="nav-icon fa fa-user"></i>
                         <p>
                             Customer
@@ -70,7 +70,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/admin/settings/" class="nav-link">
+                    <a href="{{url('admin/settings')}}" class="nav-link">
                         <i class="nav-icon fas fa-cog"></i>
                         <p>
                             Settings
